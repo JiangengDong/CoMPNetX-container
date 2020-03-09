@@ -1,7 +1,7 @@
 FROM nvidia/cudagl:10.1-runtime-ubuntu16.04
 
 RUN apt-get update && \
-    apt-get install -y apt-utils sudo dialog wget && \
+    apt-get install -y apt-utils sudo dialog wget lsb-release && \
     apt-get autoremove -y && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists/*
@@ -64,16 +64,15 @@ ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python2.7/dist-packages/open
     PYTHONPATH=$PYTHONPATH:/usr/local/lib/python2.7/dist-packages/
 
 # install ompl
-RUN apt-get update && \
-    apt-get install -y libompl-dev ompl-demos && \
+RUN wget https://ompl.kavrakilab.org/install-ompl-ubuntu.sh && \
+    chmod u+x install-ompl-ubuntu.sh && \
+    ./install-ompl-ubuntu.sh && \
     apt-get autoremove -y && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists/*
 
 # install ROS
-RUN apt-get update && \
-    apt-get install -y lsb-release && \
-    echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list && \
+RUN echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list && \
     apt-key adv --keyserver 'hkp://keyserver.ubuntu.com:80' --recv-key C1CF6E31E6BADE8868B172B4F42ED6FBAB17C654 && \
     apt-get update && \
     apt-get install -y ros-kinetic-desktop-full ros-kinetic-urdfdom-py && \
