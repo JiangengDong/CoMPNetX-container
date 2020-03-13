@@ -1,4 +1,4 @@
-FROM nvidia/cudagl:10.1-runtime-ubuntu16.04
+FROM nvidia/cudagl:10.0-runtime-ubuntu16.04
 
 RUN apt-get update && \
     apt-get install -y apt-utils sudo dialog wget lsb-release && \
@@ -80,6 +80,11 @@ RUN echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists/* && \
     rosdep init
+
+# install pytorch
+RUN pip --no-cache-dir install --upgrade pip && \
+    pip --no-cache-dir install future && \
+    pip --no-cache-dir install torch==1.4.0+cu100 torchvision==0.5.0+cu100 -f https://download.pytorch.org/whl/torch_stable.html
     
 # add a soft link for eigen
 RUN ln -sf /usr/include/eigen3/Eigen /usr/include/Eigen
