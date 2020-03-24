@@ -1,15 +1,10 @@
-FROM nvidia/cudagl:10.0-runtime-ubuntu16.04
+FROM nvidia/cudagl:10.0-devel-ubuntu16.04
 
 RUN apt-get update && \
-    apt-get install -y apt-utils sudo dialog wget lsb-release && \
+    apt-get install -y apt-utils sudo dialog wget lsb-release vim && \
     apt-get autoremove -y && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists/*
-
-# add a user "atlas" with password "atlas"
-RUN useradd -m -p fhOrBYoegyUZI atlas && \
-    adduser atlas sudo && \
-    mkdir -p /home/atlas/workspace
 
 # install dependencies
 RUN apt-get update && \ 
@@ -24,8 +19,8 @@ RUN apt-get update && \
     apt-get clean -y && \
     rm -rf /var/lib/apt/lists/*
 
-# work in atlas's home
-WORKDIR /home/atlas/workspace
+# work in /usr/local/src
+WORKDIR /usr/local/src
 
 # install collada-dom
 RUN git clone https://github.com/rdiankov/collada-dom.git && \
@@ -34,7 +29,8 @@ RUN git clone https://github.com/rdiankov/collada-dom.git && \
     cd build && \
     cmake .. && \
     make -j4 && \
-    make install
+    make install && \
+    make clean
 # install OpenSceneGraph
 RUN git clone --branch OpenSceneGraph-3.4 https://github.com/openscenegraph/OpenSceneGraph.git && \
     cd OpenSceneGraph && \
@@ -42,7 +38,8 @@ RUN git clone --branch OpenSceneGraph-3.4 https://github.com/openscenegraph/Open
     cd build && \
     cmake .. -DDESIRED_QT_VERSION=4 && \
     make -j4 && \
-    make install
+    make install && \
+    make clean
 # install Flexible Collision Library
 RUN git clone https://github.com/flexible-collision-library/fcl.git && \
     cd fcl && \
@@ -51,7 +48,8 @@ RUN git clone https://github.com/flexible-collision-library/fcl.git && \
     cd build && \
     cmake .. && \
     make -j4 && \
-    make install
+    make install && \
+    make clean
 # install OpenRAVE
 RUN git clone --branch latest_stable https://github.com/rdiankov/openrave.git && \
     cd openrave && \
@@ -59,7 +57,8 @@ RUN git clone --branch latest_stable https://github.com/rdiankov/openrave.git &&
     cd build && \
     cmake .. -DOSG_DIR=/usr/local/lib64/ && \
     make -j4 && \
-    make install
+    make install && \
+    make clean
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib/python2.7/dist-packages/openravepy/_openravepy_:/usr/local/lib \
     PYTHONPATH=$PYTHONPATH:/usr/local/lib/python2.7/dist-packages/
 
@@ -69,7 +68,8 @@ RUN wget https://ompl.kavrakilab.org/install-ompl-ubuntu.sh && \
     ./install-ompl-ubuntu.sh && \
     apt-get autoremove -y && \
     apt-get clean -y && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* && \
+    ln -sf /usr/include/eigen3/Eigen /usr/include/Eigen
 
 # install ROS
 RUN echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc/apt/sources.list.d/ros-latest.list && \
@@ -81,14 +81,27 @@ RUN echo "deb http://packages.ros.org/ros/ubuntu $(lsb_release -sc) main" > /etc
     rm -rf /var/lib/apt/lists/* && \
     rosdep init
 
+# install cudnn
+ENV CUDNN_VERSION 7.6.5.32
+LABEL com.nvidia.cudnn.version="${CUDNN_VERSION}"
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libcudnn7=$CUDNN_VERSION-1+cuda10.0 libcudnn7-dev=$CUDNN_VERSION-1+cuda10.0 && \
+    apt-mark hold libcudnn7 && \
+    apt-get autoremove -y && \
+    apt-get clean -y && \
+    rm -rf /var/lib/apt/lists/*
+
 # install pytorch
 RUN pip --no-cache-dir install --upgrade pip && \
     pip --no-cache-dir install future && \
     pip --no-cache-dir install torch==1.4.0+cu100 torchvision==0.5.0+cu100 -f https://download.pytorch.org/whl/torch_stable.html
-    
-# add a soft link for eigen
-RUN ln -sf /usr/include/eigen3/Eigen /usr/include/Eigen
 
+# add path to libtorch
+ENV CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/usr/local/lib/python2.7/dist-packages/torch
+
+# add a user "atlas" with password "atlas"
+RUN useradd -m -p fhOrBYoegyUZI atlas && \
+    adduser atlas sudo
 # change user and workdir
 USER atlas
 WORKDIR /home/atlas
@@ -104,6 +117,6 @@ RUN rosdep update && \
     echo "source /home/atlas/catkin_ws/devel/setup.bash" >> /home/atlas/.bashrc
 
 # add ormodels
-COPY --chown=atlas ormodels /home/atlas/workspace/ormodels
+COPY --chown=atlas ormodels /home/atlas/ormodels
 ENV OPENRAVE_PLUGINS=/usr/local/share/openrave-0.9/plugins
-ENV OPENRAVE_DATA=/home/atlas/workspace/ormodels
+ENV OPENRAVE_DATA=/home/atlas/ormodels
