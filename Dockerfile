@@ -92,12 +92,20 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # install pytorch
-RUN pip --no-cache-dir install --upgrade pip && \
-    pip --no-cache-dir install future && \
-    pip --no-cache-dir install torch==1.4.0+cu100 torchvision==0.5.0+cu100 -f https://download.pytorch.org/whl/torch_stable.html
-
-# add path to libtorch
-ENV CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/usr/local/lib/python2.7/dist-packages/torch
+RUN apt-get update && \
+    apt-get install -y libgoogle-glog-dev libgflags-dev unzip && \
+    apt-get autoremove -y && \
+    apt-get clean -y && \
+    rm -rf /var/lib/apt/lists/* && \
+    pip --no-cache-dir install --upgrade pip && \
+    pip --no-cache-dir install future numpy ninja pyyaml mkl mkl-include setuptools cmake cffi pathlib glog typing pillow 
+RUN git clone --recursive https://github.com/pytorch/pytorch
+RUN cd pytorch && \
+    python setup.py build
+RUN cd pytorch && \
+    python setup.py install
+ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/usr/local/src/pytorch/torch/lib/ \
+    CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/usr/local/src/pytorch/
 
 # add a user "atlas" with password "atlas"
 RUN useradd -m -p fhOrBYoegyUZI atlas && \

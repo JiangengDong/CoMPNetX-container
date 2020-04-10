@@ -1,6 +1,6 @@
 # Docker Image for Openrave
 
-This repository provides a docker image for OpenRAVE, OMPL, ROS Kinetic and some necessary ROS packages for the Baxter robot. Some OpenRAVE models from the [CoMPS](https://sourceforge.net/projects/comps/) are also included in this image, under the `/home/atlas/workspace/ormodels` folder. The username and password for this image are both "**atlas**".
+This repository provides a docker image for OpenRAVE, OMPL, ROS Kinetic and some necessary ROS packages for the Baxter robot. Some OpenRAVE models from the [CoMPS](https://sourceforge.net/projects/comps/) are also included in this image, under the `/home/atlas/ormodels` folder. The username and password for this image are both "**atlas**".
 
 ## Requirement
 
@@ -24,13 +24,37 @@ This repository provides a docker image for OpenRAVE, OMPL, ROS Kinetic and some
 
 1. the [ormodel](https://drive.google.com/open?id=1w_S6udx6ELKEkD_SLu1-z4dZqjNiD0FJ) folder
 
+## Environment and Softwares
+
+The docker image provides the following libraries and environments:
+
+* Ubuntu16.04
+
+* OpenRAVE 0.9
+
+* OMPL 1.4.2
+
+* ROS Kinetic
+
+* CUDA 10.0
+
+* CuDNN 7.6.5.32
+
+* PyTorch 1.4.2
+
+* GUI using the host's X-server
+
+Some other libraries are also installed as dependencies. We do not list them here because they are not intended.
+
 ## quick start
 
 ### Get the docker image
 
-We do not want to use the DockerHub to push and pull the image because the image is privately used. So there are only two ways to get an image. 
+There are three ways to get an image. 
 
-1. If you are the first one in your lab to use this image, you have to [build it from Dockerfile](#build-the-docker-image-from-dockerfile). 
+1. You can pull it from the [docker hub](https://hub.docker.com/repository/docker/jiangengdong/openrave). Note that we did not optimize the image size, so the total size is 9.75GB.
+
+1. If your network is not fast enough, you may want to [build it from Dockerfile](#build-the-docker-image-from-dockerfile). It takes 24 hours to build this image on a laptop with Intel® Core™ i5-4210H and GeForce GTX 960M, so please think twice before you start the building.
 
 1. Otherwise, you can [copy a image](#copy-the-docker-image-from-your-colleague) from your colleague's computer.
 
@@ -39,17 +63,17 @@ We do not want to use the DockerHub to push and pull the image because the image
 It will take hours to build this image, so Please make Sure you satisfy all the [requirements](#requirement). Put the [catkin_ws](https://drive.google.com/open?id=1XXzqqz3OuNFN-ZFKV-SLdEO23JVqeB4M) folder, the [ormodel](https://drive.google.com/open?id=1w_S6udx6ELKEkD_SLu1-z4dZqjNiD0FJ) folder and the [Dockerfile](./Dockerfile) under the same folder and execute the following command to build the image. 
 
 ```bash
-docker build --rm -f Dockerfile -t openravedocker .
+docker build --rm -f Dockerfile -t jiangengdong/openrave .
 ```
 
-Do not change the image name unless you know what you are doing, because we use the name "**openravedocker**" in the [.devcontainer/devcontainer.json](./.devcontainer/devcontainer.json), which is later used in the [development step](#use-vscode-to-develop-inside-the-container).
+Do not change the image name unless you know what you are doing, because we use the name "**jiangengdong/openrave**" in the [.devcontainer/devcontainer.json](./.devcontainer/devcontainer.json), which is later used in the [development step](#use-vscode-to-develop-inside-the-container).
 
 #### Copy the docker image from your colleague
 
 On your colleague's computer, save the image to a `*.tar.gz` file.
 
 ```bash
-docker save -o <path for generated tar file> openravedocker
+docker save -o <path for generated tar file> jiangengdong/openrave
 ```
 
 Copy the generated `*.tar.gz` file to your own computer and load it.
@@ -79,7 +103,7 @@ chmod u+x start_container.sh
 
 We recommand you use the [VSCode](https://code.visualstudio.com/) and its [Remote-Containers](https://code.visualstudio.com/docs/remote/containers) extension to develop in the container. We provide a [.devcontainer/devcontainer.json](./.devcontainer/devcontainer.json) for you to start quickly.
 
-1. Install VSCode and its Remote-Containers extension.
+1. Install [VSCode](https://code.visualstudio.com/) and its [Remote-Containers](https://code.visualstudio.com/docs/remote/containers) extension.
 
 1. Copy the [.devcontainer](./.devcontainer) folder to your work folder, say `/home/peter/src`.
 

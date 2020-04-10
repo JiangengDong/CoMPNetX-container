@@ -1,2 +1,2 @@
-libtorch*/libtorch/build-bash
-libtorch*/libtorch/build-version
+.git/
+/test/
