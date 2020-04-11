@@ -1,0 +1,17 @@
+{
+    "name": "test", 
+    "image": "jiangengdong/openrave:cudavnc",
+    "appPort": ["5900:5900"],
+    "runArgs": [
+        "--gpus=all",
+    ],
+    "extensions": [
+        "ms-vscode.cpptools", 
+        "ms-vscode.cmake-tools", 
+        "ms-python.python",
+        "twxs.cmake", 
+    ], 
+    "settings": {
+        "terminal.integrated.shell.linux": "/bin/bash",
+    }
+}
