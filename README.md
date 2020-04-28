@@ -63,3 +63,10 @@ We provide two different ways of visualization.
 - `cudavnc`: The second method depends on VNC. If you are using the image on a server, or if you do not have an X server locally, you will have to use VNC. For more detail, please read [cudavnc/README](cudavnc/README.md).
 
 We cannot provide the two visualization in the same image yet. Sorry for your inconvenience.
+
+
+## TODO
+
+- Rebuild torch_base with pytorch v1.4.1.
+
+- Try to use multi-stage build
