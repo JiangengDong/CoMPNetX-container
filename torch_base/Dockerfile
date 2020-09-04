@@ -10,7 +10,7 @@ RUN pip --no-cache-dir install --upgrade pip && \
     pip --no-cache-dir install setuptools && \
     pip --no-cache-dir install future numpy ninja pyyaml mkl mkl-include setuptools cmake cffi pathlib glog typing pillow
 WORKDIR /usr/local/src
-RUN git clone --recursive --branch v1.4.1 https://github.com/pytorch/pytorch
+RUN git clone --recursive --branch v1.4.1 --depth 1 https://github.com/pytorch/pytorch
 RUN cd pytorch && \
     python setup.py build
 RUN cd pytorch && \
