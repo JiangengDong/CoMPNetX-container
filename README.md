@@ -1,5 +1,7 @@
 # Docker Image for Openrave
 
+**WARN**: This repository is no longer active, as I find it better to merge it into the [main repository](https://github.com/JiangengDong/CoMPNetXhttps://github.com/JiangengDong/CoMPNetX). Check the [docker](https://github.com/JiangengDong/CoMPNetX/tree/dev/docker) directory there for updated versions.
+
 This repository provides a docker image for OpenRAVE, OMPL, ROS Kinetic and some necessary ROS packages for the Baxter robot. Some OpenRAVE models from the [CoMPS](https://sourceforge.net/projects/comps/) are also included in this image, under the `/home/atlas/ormodels` folder. The username and password for this image are both "**atlas**".
 
 ## Requirement
